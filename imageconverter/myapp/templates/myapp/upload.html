@@ -1,10 +1,11 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Upload CSV</title>
-    <style>
+       <style>
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -43,5 +44,9 @@
         {{ form }}
         <button type="submit">Upload</button>
     </form>
+    
+    {% if file_url %}
+    <p>Download the updated CSV file <a href="{{ file_url }}">here</a>.</p>
+    {% endif %}
 </body>
 </html>

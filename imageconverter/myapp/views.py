@@ -1,11 +1,22 @@
-from django.shortcuts import render
 import csv
 import urllib.request
-import json
 from django.shortcuts import render
 from django.http import HttpResponse
-from .models import Vehicle
 from .forms import CSVUploadForm
+from .models import Vehicle
+import json
+
+
+def download_image(url):
+    # Function to download image from given URL
+    try:
+        with urllib.request.urlopen(url) as response:
+            image_data = response.read()
+            return image_data
+    except Exception as e:
+        print(f"Failed to download image from URL: {url}. Error: {e}")
+        return None
+
 
 def index(request):
     if request.method == "POST":
@@ -20,14 +31,15 @@ def index(request):
                 image_urls = json.loads(row["image"])
                 updated_image_urls = []
                 for image_url in image_urls:
-                    # Here you can write code to download the image and update the URL
-                    # For example:
-                    # urllib.request.urlretrieve(image_url, 'path_to_save_image_on_server')
-                    # updated_image_url = 'new_image_url'
-                    # updated_image_urls.append(updated_image_url)
-                    updated_image_urls.append(
-                        image_url
-                    )  # For demonstration, just keeping the original URLs
+                    # Download image
+                    image_data = download_image(image_url)
+                    if image_data:
+                        # Save the image to your desired location and get the new URL
+                        new_image_url = "http://new-image-url.com"
+                    else:
+                        new_image_url = image_url
+                        
+                        updated_image_urls.append(new_image_url)
                 row["image"] = json.dumps(updated_image_urls)
                 updated_rows.append(row)
             response = HttpResponse(content_type="text/csv")
@@ -41,4 +53,5 @@ def index(request):
             return response
     else:
         form = CSVUploadForm()
-    return render(request, "myapp/upload.html", {"form": form})
+
+    return render(request, 'myapp/upload.html', {'form': form})
